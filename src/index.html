@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Reload Game</title>
+  <style>
+    :root {
+      --font-family: Arial, sans-serif;
+      /* --- Colors --- */
+      --background-color: #f0f0f0;
+      --section-background: white;
+      --coins-color: #4CAF50;
+      --button-background: #4CAF50;
+      --button-color: white;
+      --button-disabled-background: #ccc;
+      --small-text-color: #666;
+      --text-color: #000;
+      --leaderboard-border-color: #ddd;
+      --leaderboard-header-background: #f2f2f2;
+      --top-menu-button-font: Roboto;
+      --top-menu-button-background-open: #0046BA;
+      --top-menu-button-background: #008CBA;
+      --top-menu-button-hover-background: #00B0F0;
+      --reset-button-background: #f00;
+      --reset-button-background-hover: #f33;
+      --switch-background: #ccc;
+      --switch-checked-background: #2196F3;
+      --switch-slider-background: white;
+      --scrollbar-track-color: #f0f0f0;
+      --scrollbar-thumb-color: #999;
+      /* --- Sizes --- */
+      --body-padding: min(20px, 5vw);
+      --section-padding: min(20px, 5vw);
+      --section-margin: min(10px, 2.5vw);
+      --section-border-radius: min(10px, 2.5vw);
+      --section-max-width: min(550px, 95vw);
+      --button-border-radius: min(5px, 1.25vw);
+      --h1-font-size: min(36px, 7vw);
+      --h2-font-size: min(30px, 12vw);
+      --coins-font-size: min(48px, 12vw);
+      --coins-margin: min(20px, 5vw) 0;
+      --increment-font-size: min(22px, 5.5vw);
+      --p-font-size: min(18px, 4.5vw);
+      --button-padding: min(15px, 3.75vw) min(32px, 8vw);
+      --button-font-size: min(16px, 4vw);
+      --button-margin: min(4px, 1vw) min(2px, 0.5vw);
+      --upgrade-margin: min(10px, 2.5vw) 0;
+      --upgrade-description-font-size: min(0.9em, 3.6vw);
+      --leaderboard-cell-padding: min(10px, 2.5vw);
+      --top-menu-button-padding: min(15px, 3.75vw);
+      --top-menu-button-font-size: min(30px, 7.5vw);
+      --top-menu-button-gap: min(7.5px, 1.8vw);
+      --top-menu-button-size: min(50px, 12.5vw);
+      --reset-button-font-size: min(20px, 5vw);
+      --reset-button-padding: min(12px, 3vw);
+      --switch-width: min(60px, 15vw);
+      --switch-height: min(34px, 8.5vw);
+    }
+
+    .dark-mode {
+      --background-color: #000;
+      --text-color: #fff;
+      --section-background: #222;
+      --button-background: #555;
+      --button-disabled-background: #444;
+      --button-disabled-color: #888;
+      --leaderboard-header-background: #444;
+      --leaderboard-border-color: #555;
+      --top-menu-button-background-open: #888;
+      --top-menu-button-background: #404040;
+      --top-menu-button-hover-background: #666;
+      --dark-text: #fff;
+      --scrollbar-track-color: #333;
+      --scrollbar-thumb-color: #999;
+    }
+
+    body {
+      font-family: var(--font-family);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: var(--background-color);
+      padding: var(--body-padding);
+      box-sizing: border-box;
+      color: var(--text-color);
+    }
+
+    .section {
+      text-align: center;
+      padding: var(--section-padding);
+      background-color: var(--section-background);
+      border-radius: var(--section-border-radius);
+      box-shadow: 0 0 var(--section-border-radius) rgba(0, 0, 0, 0.1);
+      margin: var(--section-margin);
+      width: 95%;
+      max-width: var(--section-max-width);
+      color: var(--text-color);
+    }
+
+    h1 {
+      font-size: var(--h1-font-size);
+    }
+
+    h2 {
+      font-size: var(--h2-font-size);
+    }
+
+    #coins {
+      font-size: var(--coins-font-size);
+      color: var(--coins-color);
+      margin: var(--coins-margin);
+    }
+
+    #increment {
+      font-size: var(--increment-font-size);
+    }
+
+    p {
+      font-size: var(--p-font-size);
+    }
+
+    button {
+      background-color: var(--button-background);
+      border: none;
+      color: var(--button-color);
+      padding: var(--button-padding);
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: var(--button-font-size);
+      margin: var(--button-margin);
+      cursor: pointer;
+      border-radius: var(--button-border-radius);
+      transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button:disabled {
+      background-color: var(--button-disabled-background);
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .section-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: var(--upgrade-margin);
+    }
+
+    .section-row>div {
+      text-align: left;
+      color: var(--text-color);
+    }
+
+    .section-row>div>div:first-child {
+      font-weight: bold;
+      color: var(--text-color);
+    }
+
+    .section-row>div>div:last-child {
+      font-size: var(--upgrade-description-font-size);
+      color: var(--small-text-color);
+    }
+
+    #leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    #leaderboard-table th,
+    #leaderboard-table td {
+      padding: var(--leaderboard-cell-padding);
+      border-bottom: 1px solid var(--leaderboard-border-color);
+      text-align: left;
+      font-family: monospace;
+    }
+
+    #leaderboard-table th {
+      background-color: var(--leaderboard-header-background);
+      font-weight: bold;
+    }
+
+    #leaderboard-wrapper-div {
+      max-height: 300px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
+    }
+
+    /* Custom scrollbar for Webkit browsers */
+    #leaderboard-wrapper-div::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #leaderboard-wrapper-div::-webkit-scrollbar-track {
+      background: var(--scrollbar-track-color);
+      border-radius: 4px;
+    }
+
+    #leaderboard-wrapper-div::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-thumb-color);
+      border-radius: 4px;
+      transition: background 0.2s ease;
+    }
+
+    #leaderboard-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .top-menu {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--top-menu-button-gap);
+    }
+
+    .top-menu-button {
+      font-family: var(--top-menu-button-font);
+      padding: var(--top-menu-button-padding);
+      font-size: var(--top-menu-button-font-size);
+      width: var(--top-menu-button-size);
+      height: var(--top-menu-button-size);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--top-menu-button-background);
+    }
+
+    .top-menu-button:hover {
+      background-color: var(--top-menu-button-hover-background);
+    }
+
+    .open {
+      background-color: var(--top-menu-button-background-open);
+    }
+
+    .open:hover {
+      background-color: var(--top-menu-button-background-open);
+    }
+
+    .reset-button {
+      background-color: var(--reset-button-background);
+      font-weight: bold;
+      font-size: var(--reset-button-font-size);
+      padding: var(--reset-button-padding);
+      transition: background-color 0.2s ease;
+    }
+
+    .reset-button:hover {
+      background-color: var(--reset-button-background-hover);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* The switch - the box around the slider */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: var(--switch-width);
+      height: var(--switch-height);
+    }
+
+    /* Hide default HTML checkbox */
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    /* The slider */
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--switch-background);
+      border-radius: var(--switch-height);
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: calc(var(--switch-height) * 0.8);
+      width: calc(var(--switch-height) * 0.8);
+      left: calc(var(--switch-height) * 0.1);
+      bottom: calc(var(--switch-height) * 0.1);
+      background-color: var(--switch-slider-background);
+      border-radius: 50%;
+    }
+
+    /* Only apply transition when interacting with the switch */
+    .switch:hover .slider,
+    .switch:focus-within .slider {
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    .switch:hover .slider:before,
+    .switch:focus-within .slider:before {
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    input:checked+.slider {
+      background-color: var(--switch-checked-background);
+    }
+
+    input:checked+.slider:before {
+      -webkit-transform: translateX(calc(var(--switch-width) - var(--switch-height)));
+      -ms-transform: translateX(calc(var(--switch-width) - var(--switch-height)));
+      transform: translateX(calc(var(--switch-width) - var(--switch-height)));
+    }
+  </style>
+</head>
+
+<body>
+  <div id="top-menu" class="top-menu hidden">
+    <button data-section-id="home" class="top-menu-button open" onclick="openSection('home')">🏠</button>
+    <button data-section-id="shop" class="top-menu-button" onclick="openSection('shop')">🛒</button>
+    <button data-section-id="luck-upgrades" class="top-menu-button" onclick="openSection('luck-upgrades')">🍀</button>
+    <button data-section-id="achievements" class="top-menu-button" onclick="openSection('achievements')">🏅</button>
+    <button data-section-id="rebirth" class="top-menu-button" onclick="openSection('rebirth')">🔁</button>
+    <button data-section-id="leaderboard" class="top-menu-button" onclick="openSection('leaderboard')">👑</button>
+    <button data-section-id="settings" class="top-menu-button" onclick="openSection('settings')">⚙️</button>
+  </div>
+  <div id="home" class="section home">
+    <h1>🔥 The Reload Game 🔥</h1>
+    <p>Refresh the page to get coins</p>
+    <div id="coins">999,999$</div>
+    <div id="increment">Log in to your WildWest.gg acount to play the game</div>
+  </div>
+  <div id="shop" class="section shop hidden">
+    <h2>Shop</h2>
+    <div id="upgradesContainer" class="section-container">
+      <!-- Upgrades will be dynamically added here -->
+    </div>
+  </div>
+  <div id="luck-upgrades" class="section luck-upgrades hidden">
+    <h2>Luck Upgrades</h2>
+    <div id="luckUpgradesContainer" class="section-container">
+      <!-- Luck Upgrades will be dynamically added here -->
+    </div>
+  </div>
+  <div id="rebirth" class="section rebirth hidden">
+    <h2>Rebirth</h2>
+    <div id="rebirthContainer" class="section-container">
+      <!-- Rebirth Upgrades will be dynamically added here -->
+    </div>
+  </div>
+  <div id="achievements" class="section achievements hidden">
+    <h2>Achievements</h2>
+    <div id="achievementsContainer" class="section-container">
+      <!-- Achievements will be dynamically added here -->
+    </div>
+  </div>
+  <div id="leaderboard" class="section leaderboard hidden">
+    <h2>Leaderboard</h2>
+    <div id="leaderboard-wrapper-div">
+      <table id="leaderboard-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Username</th>
+            <th>Total Score</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard-table-body">
+          <!-- Leaderboard entries will be inserted here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div id="settings" class="section settings hidden">
+    <h2>Settings</h2>
+    <div id="settingsContainer" class="section-container">
+      <div id="darkmode-setting-div" class="section-row setting">
+        <div>Dark mode</div>
+        <label class="switch">
+          <input type="checkbox" id="darkmode-switch" onchange="toggleDarkMode()">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div id="alerts-setting-div" class="section-row setting">
+        <div>Alerts</div>
+        <label class="switch">
+          <input type="checkbox" id="alerts-switch" onchange="toggleAlerts()">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div id="reset-setting-div" class="section-row setting">
+        <div>Reset game</div>
+        <button id="reset-button" class="reset-button" onclick="confirmResetGame()">RESET GAME</button>
+      </div>
+    </div>
+  </div>
+  <script src="https://static.staticsave.com/wildwest/askupvote.js"></script>
+  <script>
+    (function() {
+      const GG_ALL_GAME_CONFIG = {
+        upgrades: (() => {
+          // Custom overrides defined by level (only properties you want to override)
+          const customUpgrades = [{
+              baseCost: 7,
+              costIncrease: 1.125,
+              max_level: 199,
+              rebirthsToUnlock: 0
+            },
+            {
+              baseCost: 120,
+              costIncrease: 1.0635,
+              rebirthsToUnlock: 0
+            },
+            {
+              baseCost: 2e3 // 2000
+            },
+            {
+              baseCost: 3e4
+            },
+            {
+              baseCost: 4e5
+            },
+            {
+              baseCost: 5e6
+            },
+            {
+              baseCost: 7e7
+            },
+            {
+              baseCost: 1e9
+            },
+            {
+              baseCost: 2e10
+            },
+            {
+              baseCost: 4e11
+            },
+            {
+              baseCost: 6e12
+            },
+            {
+              baseCost: 8e13
+            },
+            {
+              baseCost: 1e15
+            },
+            {
+              baseCost: 2e16
+            },
+            {
+              baseCost: 5e17
+            },
+            {
+              baseCost: 8e18
+            },
+            {
+              baseCost: 1e20
+            },
+            {
+              baseCost: 2e21
+            },
+            {
+              baseCost: 4e22
+            },
+            {
+              baseCost: 7e23
+            },
+            {
+              baseCost: 1e25
+            },
+            {
+              baseCost: 3e26
+            },
+            {
+              baseCost: 5e27
+            },
+            {
+              baseCost: 8e28
+            },
+            {
+              baseCost: 1e30
+            },
+            {
+              baseCost: 3e31
+            },
+            {
+              baseCost: 5e32
+            },
+            {
+              baseCost: 8e33
+            }
+          ];
+          // Default upgrade generator (internal to the IIFE)
+          const defaultUpgradeGenerator = (i) => {
+            return {
+              baseCost: Infinity,
+              costIncrease: 1.05,
+              increment: 10 ** i,
+              max_level: 180,
+              rebirthsToUnlock: 2 * i - 1,
+            };
+          };
+          // Create and merge the upgrades
+          const upgrades = [];
+          for (let i = 0; i < 35; i++) {
+            const defaultConfig = defaultUpgradeGenerator(i);
+            const customConfig = customUpgrades[i] || {};
+            upgrades.push({
+              ...defaultConfig,
+              ...customConfig
+            });
+          }
+          return upgrades;
+        })(),
+        luckUpgrades: [{
+            id: 'unlock',
+            name: 'Critical Reload',
+            description: (gameState) => 'Get a chance to get more coins from a reload',
+            baseCost: 5_000,
+            costIncrease: 1,
+            max_level: 1,
+            rebirthsToUnlock: 2,
+          },
+          {
+            id: 'chance',
+            name: 'Chance of Critical Reload',
+            description: (gameState) => `+1% to get Critical Reload (Currently ${gameState.criticalReloadChance * 100}%)`,
+            baseCost: 20_000,
+            costIncrease: 1.25,
+            max_level: 75,
+            rebirthsToUnlock: 2,
+          },
+          {
+            id: 'multiplier',
+            name: 'Crtitical Reload multiplier',
+            description: (gameState) => `Increase the multiplier of Critical Reload (Currently x${gameState.criticalReloadMultiplier})`,
+            baseCost: 20_000,
+            costIncrease: 1.05,
+            max_level: 196,
+            rebirthsToUnlock: 2,
+          }
+        ],
+        rebirthUpgrades: [{
+            id: 'rebirth',
+            name: 'Rebirth',
+            description: (gameState) => `+${gameState.bitcoinsPerRebirth}₿ (You have ${gameState.bitcoins}₿)`,
+            baseCost: 1000,
+            costCurrency: '$',
+            costIncrease: 4,
+            max_level: 50,
+            rebirthsToUnlock: 0,
+          },
+          {
+            id: 'bitcoins-per-rebirth',
+            name: 'Bitcoins per rebirth',
+            description: (gameState) => `+1₿ per rebirth (Currently ${gameState.bitcoinsPerRebirth}₿ per rebirth)`,
+            baseCost: 1,
+            costCurrency: '₿',
+            costIncrease: 1.58,
+            max_level: 19,
+            rebirthsToUnlock: 1,
+          },
+          {
+            id: 'profit-multiplier',
+            name: 'Profit multiplier',
+            description: (gameState) => `Additional multiplier for Coins Per Reload (Currently x${gameState.coinsPerReloadMultiplier})`,
+            baseCost: 1,
+            costCurrency: '₿',
+            costIncrease: 1.09,
+            max_level: 19,
+            rebirthsToUnlock: 1,
+          }
+        ],
+        achievements: [{
+            name: 'First Steps',
+            description: 'Do 1 reload',
+            requirement: (gameState) => (gameState.totalReloads >= 1)
+          },
+          {
+            name: 'Upgrader',
+            description: 'Buy 1 upgrade',
+            requirement: (gameState) => (gameState.coinsPerReload > 1)
+          },
+          {
+            name: 'Reborn',
+            description: 'Do 1 rebirth',
+            requirement: (gameState) => (gameState.rebirths >= 1)
+          },
+          {
+            name: 'Lucky Beginner',
+            description: 'Unlock Critical Reloads',
+            requirement: (gameState) => (gameState.criticalReloadUnlocked)
+          },
+          {
+            name: 'Billionaire',
+            description: 'Have 1,000,000,000$ at once',
+            requirement: (gameState) => (gameState.coins >= 1_000_000_000)
+          },
+          {
+            name: 'Crypto Enthusiast',
+            description: 'Have 10₿ at once',
+            requirement: (gameState) => (gameState.bitcoins >= 10)
+          },
+          {
+            name: 'Lucky Master',
+            description: 'Get 50% Critical Reload chance',
+            requirement: (gameState) => (gameState.criticalReloadChance >= 0.5)
+          },
+          {
+            name: 'Reborn Master',
+            description: 'Do 25 rebirths',
+            requirement: (gameState) => (gameState.rebirths >= 25)
+          }
+        ]
+      };
+
+      function getNewGameState() {
+        const gameState = {
+          totalReloads: 0,
+          totalScore: 0,
+          coins: 0,
+          coinsPerReload: 1,
+          coinsPerReloadMultiplier: 1,
+          criticalReloadUnlocked: false,
+          criticalReloadChance: 0,
+          criticalReloadMultiplier: 1,
+          rebirthsUnlocked: false,
+          rebirths: 0,
+          bitcoins: 0,
+          bitcoinsPerRebirth: 1,
+          upgrades: Array(GG_ALL_GAME_CONFIG.upgrades.length).fill(0),
+          luckUpgrades: Array(GG_ALL_GAME_CONFIG.luckUpgrades.length).fill(0),
+          rebirthUpgrades: Array(GG_ALL_GAME_CONFIG.rebirthUpgrades.length).fill(0),
+          achievements: Array(GG_ALL_GAME_CONFIG.achievements.length).fill(false),
+          settingDarkMode: true,
+          settingAlerts: true,
+          sectionOpened: 'home'
+        };
+        return gameState;
+      }
+
+      function initializeTopMenu() {
+        const topMenu = document.getElementById('top-menu');
+        const topMenuButtons = document.querySelectorAll('.top-menu-button');
+        topMenuButtons.forEach(topMenuButton => {
+          const sectionId = topMenuButton.dataset.sectionId;
+          switch (sectionId) {
+            case 'luck-upgrades':
+              if (gameState.rebirths >= 2) {
+                topMenuButton.classList.remove('hidden');
+              } else {
+                topMenuButton.classList.add('hidden');
+              }
+              break;
+            case 'rebirth':
+              if (gameState.rebirthsUnlocked || (gameState.coins >= 800)) {
+                gameState.rebirthsUnlocked = true;
+                topMenuButton.classList.remove('hidden');
+              } else {
+                topMenuButton.classList.add('hidden');
+              }
+              break;
+            default:
+              topMenuButton.classList.remove('hidden');
+              break;
+          }
+        });
+        topMenu.classList.remove('hidden');
+      }
+
+      function initializeShop() {
+        const upgradesContainer = document.getElementById('upgradesContainer');
+        upgradesContainer.innerHTML = '';
+        GG_ALL_GAME_CONFIG.upgrades.forEach((upgrade, index) => {
+          if (gameState.rebirths < upgrade.rebirthsToUnlock) {
+            return;
+          }
+          const baseIncrement = (upgrade.increment * gameState.coinsPerReloadMultiplier).toLocaleString('en-US');
+          const upgradeCost = Math.round(upgrade.baseCost * upgrade.costIncrease ** gameState.upgrades[index]).toLocaleString('en-US');
+          // Create the main container
+          const upgradeDiv = document.createElement('div');
+          upgradeDiv.className = 'section-row upgrade';
+          // Create the text container
+          const textDiv = document.createElement('div');
+          const tierText = document.createElement('div');
+          tierText.textContent = `Tier ${index + 1} Upgrade`;
+          const incrementText = document.createElement('div');
+          incrementText.textContent = `+${baseIncrement}$ per reload`;
+          // Create the button
+          const upgradeButton = document.createElement('button');
+          upgradeButton.id = `upgrade-button-${index}`;
+          upgradeButton.className = 'upgrade-button';
+          upgradeButton.textContent = `Cost: ${upgradeCost}$`;
+          // Add event listener
+          upgradeButton.addEventListener('click', () => buyUpgrade(index));
+          // Append everything
+          textDiv.appendChild(tierText);
+          textDiv.appendChild(incrementText);
+          upgradeDiv.appendChild(textDiv);
+          upgradeDiv.appendChild(upgradeButton);
+          upgradesContainer.appendChild(upgradeDiv);
+        });
+      }
+
+      function initializeLuckUpgrades() {
+        const luckUpgradesContainer = document.getElementById('luckUpgradesContainer');
+        luckUpgradesContainer.innerHTML = '';
+        GG_ALL_GAME_CONFIG.luckUpgrades.forEach((upgrade, index) => {
+          if (gameState.rebirths < upgrade.rebirthsToUnlock) {
+            return;
+          }
+          if (!gameState.criticalReloadUnlocked && (upgrade.id === 'chance' || upgrade.id === 'multiplier')) {
+            return;
+          }
+          const upgradeCost = Math.round(upgrade.baseCost * upgrade.costIncrease ** gameState.luckUpgrades[index]).toLocaleString('en-US');
+          // Create the main container
+          const upgradeDiv = document.createElement('div');
+          upgradeDiv.className = 'section-row upgrade';
+          // Create the text container
+          const textDiv = document.createElement('div');
+          const nameText = document.createElement('div');
+          nameText.textContent = upgrade.name;
+          const descriptionText = document.createElement('div');
+          descriptionText.id = `luckUpgradeDescription${index + 1}`;
+          descriptionText.textContent = upgrade.description;
+          // Create the button
+          const upgradeButton = document.createElement('button');
+          upgradeButton.id = `luckUpgrade${index + 1}`;
+          upgradeButton.className = 'luck-upgrade-button';
+          upgradeButton.textContent = `Cost: ${upgradeCost}$`;
+          // Add event listener
+          upgradeButton.addEventListener('click', () => buyLuckUpgrade(index));
+          // Append everything
+          textDiv.appendChild(nameText);
+          textDiv.appendChild(descriptionText);
+          upgradeDiv.appendChild(textDiv);
+          upgradeDiv.appendChild(upgradeButton);
+          luckUpgradesContainer.appendChild(upgradeDiv);
+        });
+      }
+
+      function initializeRebirthUpgrades() {
+        const rebirthContainer = document.getElementById('rebirthContainer');
+        rebirthContainer.innerHTML = '';
+        GG_ALL_GAME_CONFIG.rebirthUpgrades.forEach((upgrade, index) => {
+          if (gameState.rebirths < upgrade.rebirthsToUnlock) {
+            return;
+          }
+          const upgradeCost = Math.round(upgrade.baseCost * upgrade.costIncrease ** gameState.rebirthUpgrades[index]);
+          // Create the main container
+          const upgradeDiv = document.createElement('div');
+          upgradeDiv.className = 'section-row upgrade';
+          // Create the text container
+          const textDiv = document.createElement('div');
+          const nameText = document.createElement('div');
+          nameText.textContent = upgrade.name;
+          const descriptionText = document.createElement('div');
+          descriptionText.id = `rebirthUpgradeDescription${index + 1}`;
+          descriptionText.textContent = upgrade.description(gameState);
+          // Create the button
+          const upgradeButton = document.createElement('button');
+          upgradeButton.id = `rebirthUpgrade${index + 1}`;
+          upgradeButton.className = 'rebirth-upgrade-button';
+          upgradeButton.textContent = `Cost: ${upgradeCost.toLocaleString("en-US")}${upgrade.costCurrency}`;
+          // Add event listener
+          upgradeButton.addEventListener('click', () => buyRebirthUpgrade(index));
+          // Append everything
+          textDiv.appendChild(nameText);
+          textDiv.appendChild(descriptionText);
+          upgradeDiv.appendChild(textDiv);
+          upgradeDiv.appendChild(upgradeButton);
+          rebirthContainer.appendChild(upgradeDiv);
+        });
+      }
+
+      function initializeAchievements() {
+        const achievementsContainer = document.getElementById('achievementsContainer');
+        achievementsContainer.innerHTML = '';
+        GG_ALL_GAME_CONFIG.achievements.forEach((achievement, index) => {
+          // Create the main container
+          const achievementDiv = document.createElement('div');
+          achievementDiv.id = `achievementDiv${index + 1}`;
+          achievementDiv.className = 'section-row achievement';
+          // Create the text container
+          const textDiv = document.createElement('div');
+          const nameText = document.createElement('div');
+          const completed = gameState.achievements[index] ? '✅' : '❌';
+          nameText.textContent = `${achievement.name} ${completed}`;
+          const descriptionText = document.createElement('div');
+          descriptionText.id = `achievementDescription${index + 1}`;
+          descriptionText.textContent = achievement.description;
+          // Append everything
+          textDiv.appendChild(nameText);
+          textDiv.appendChild(descriptionText);
+          achievementDiv.appendChild(textDiv);
+          achievementsContainer.appendChild(achievementDiv);
+        });
+      }
+
+      function updateScore() {
+        const baseIncrement = gameState.coinsPerReload * gameState.coinsPerReloadMultiplier;
+        document.getElementById('coins').textContent = `${gameState.coins.toLocaleString("en-US")}$`;
+        document.getElementById('increment').textContent = `${baseIncrement.toLocaleString("en-US")}$ per reload`;
+        updateUpgradeButtons();
+        updateAchievements();
+        initializeAchievements();
+        saveScore(gameState.totalScore, '');
+      }
+
+      function updateAchievements() {
+        GG_ALL_GAME_CONFIG.achievements.forEach((achievement, index) => {
+          gameState.achievements[index] = achievement.requirement(gameState);
+        });
+      }
+
+      function updateUpgradeButtons() {
+        // upgrades
+        const upgradeButtons = document.querySelectorAll('.upgrade-button');
+        upgradeButtons.forEach((button, index) => {
+          const upgrade = GG_ALL_GAME_CONFIG.upgrades[index];
+          const maxLevel = upgrade.max_level;
+          const maxLevelReached = (gameState.upgrades[index] >= maxLevel);
+          const upgradeCost = Math.round(upgrade.baseCost * upgrade.costIncrease ** gameState.upgrades[index]);
+          button.disabled = (gameState.coins < upgradeCost);
+          if (maxLevelReached) {
+            button.disabled = true;
+            switch (maxLevel) {
+              case 0:
+                button.textContent = 'Not implemented';
+                break;
+              case 1:
+                button.textContent = 'Unlocked';
+                break;
+              default:
+                button.textContent = 'Max level';
+                break;
+            }
+          } else {
+            button.textContent = `Cost: ${upgradeCost.toLocaleString("en-US")}$`;
+          }
+        });
+        // luckUpgrades
+        const luckUpgradeButtons = document.querySelectorAll('.luck-upgrade-button');
+        luckUpgradeButtons.forEach((button, index) => {
+          const upgrade = GG_ALL_GAME_CONFIG.luckUpgrades[index];
+          const maxLevel = GG_ALL_GAME_CONFIG.luckUpgrades[index].max_level;
+          const maxLevelReached = (gameState.luckUpgrades[index] >= maxLevel);
+          const upgradeCost = Math.round(upgrade.baseCost * upgrade.costIncrease ** gameState.luckUpgrades[index]);
+          button.disabled = (gameState.coins < upgradeCost);
+          if (maxLevelReached) {
+            button.disabled = true;
+            switch (maxLevel) {
+              case 0:
+                button.textContent = 'Not implemented';
+                break;
+              case 1:
+                button.textContent = 'Unlocked';
+                break;
+              default:
+                button.textContent = 'Max level';
+                break;
+            }
+          } else {
+            button.textContent = `Cost: ${upgradeCost.toLocaleString("en-US")}$`;
+          }
+          const upgradeDiv = document.getElementById(`luckUpgradeDiv${index + 1}`);
+          if (gameState.criticalReloadUnlocked) {
+            upgradeDiv.style.display = "flex";
+          }
+          const upgradeDescription = document.getElementById(`luckUpgradeDescription${index + 1}`);
+          upgradeDescription.textContent = upgrade.description(gameState);
+        });
+        // rebirthUpgrades
+        const rebirthUpgradeButtons = document.querySelectorAll('.rebirth-upgrade-button');
+        rebirthUpgradeButtons.forEach((button, index) => {
+          const upgrade = GG_ALL_GAME_CONFIG.rebirthUpgrades[index];
+          const maxLevel = upgrade.max_level;
+          const maxLevelReached = (gameState.rebirthUpgrades[index] >= maxLevel);
+          const upgradeCost = Math.round(upgrade.baseCost * upgrade.costIncrease ** gameState.rebirthUpgrades[index]);
+          if (maxLevelReached) {
+            button.disabled = true;
+            switch (maxLevel) {
+              case 0:
+                button.textContent = 'Not implemented';
+                break;
+              case 1:
+                button.textContent = 'Unlocked';
+                break;
+              default:
+                button.textContent = 'Max level';
+                break;
+            }
+          } else {
+            button.textContent = `Cost: ${upgradeCost.toLocaleString("en-US")}${upgrade.costCurrency}`;
+            button.disabled = upgrade.id === 'rebirth' ? (gameState.coins < upgradeCost) : (gameState.bitcoins < upgradeCost);
+          }
+          const upgradeDescription = document.getElementById(`rebirthUpgradeDescription${index + 1}`);
+          upgradeDescription.textContent = upgrade.description(gameState);
+        });
+      }
+
+      function buyUpgrade(upgradeIndex) {
+        const upgrade = GG_ALL_GAME_CONFIG.upgrades[upgradeIndex];
+        const upgradeCost = Math.round(upgrade.baseCost * upgrade.costIncrease ** gameState.upgrades[upgradeIndex]);
+        if (gameState.coins < upgradeCost) return;
+        gameState.coins -= upgradeCost;
+        gameState.coinsPerReload += upgrade.increment;
+        gameState.upgrades[upgradeIndex]++;
+        document.getElementById(`upgrade-button-${upgradeIndex}`).textContent = `Cost: ${upgradeCost.toLocaleString("en-US")}$`;
+        updateScore();
+        saveGame();
+      }
+
+      function buyLuckUpgrade(upgradeIndex) {
+        const upgrade = GG_ALL_GAME_CONFIG.luckUpgrades[upgradeIndex];
+        const upgradeCost = Math.round(upgrade.baseCost * upgrade.costIncrease ** gameState.luckUpgrades[upgradeIndex]);
+        if (gameState.coins < upgradeCost) return;
+        gameState.coins -= upgradeCost;
+        switch (upgrade.id) {
+          case 'unlock':
+            gameState.criticalReloadUnlocked = true;
+            gameState.criticalReloadChance = 0.05;
+            gameState.criticalReloadMultiplier = 2;
+            break;
+          case 'chance':
+            gameState.criticalReloadChance = Math.round((gameState.criticalReloadChance + 0.01) * 100) / 100;
+            break;
+          case 'multiplier':
+            gameState.criticalReloadMultiplier = Math.round((gameState.criticalReloadMultiplier + 0.5) * 10) / 10;
+            break;
+        }
+        gameState.luckUpgrades[upgradeIndex]++;
+        document.getElementById(`luckUpgrade${upgradeIndex + 1}`).textContent = `Cost: ${upgradeCost.toLocaleString("en-US")}$`;
+        saveGame();
+        updateScore();
+      }
+
+      function buyRebirthUpgrade(upgradeIndex) {
+        const upgrade = GG_ALL_GAME_CONFIG.rebirthUpgrades[upgradeIndex];
+        if (upgrade.id === 'rebirth') {
+          const upgradeCost = Math.round(upgrade.baseCost * upgrade.costIncrease ** gameState.rebirthUpgrades[upgradeIndex]);
+          if (gameState.coins < upgradeCost) return;
+          doRebirth();
+          return;
+        }
+        const upgradeCost = Math.round(upgrade.baseCost * upgrade.costIncrease ** gameState.rebirthUpgrades[upgradeIndex]);
+        if (gameState.bitcoins < upgradeCost) return;
+        gameState.bitcoins -= upgradeCost;
+        gameState.rebirthUpgrades[upgradeIndex]++;
+        switch (upgrade.id) {
+          case 'bitcoins-per-rebirth':
+            gameState.bitcoinsPerRebirth += 1;
+            break;
+          case 'profit-multiplier':
+            gameState.coinsPerReloadMultiplier += 1;
+            break;
+        }
+        saveGame();
+        updateScore();
+      }
+
+      function doRebirth() {
+        gameState.rebirthUpgrades[0]++;
+        gameState = {
+          ...gameState,
+          coins: 0,
+          coinsPerReload: 1,
+          criticalReloadUnlocked: false,
+          criticalReloadChance: 0,
+          criticalReloadMultiplier: 1,
+          rebirths: gameState.rebirths + 1,
+          bitcoins: gameState.bitcoins + gameState.bitcoinsPerRebirth,
+          upgrades: Array(GG_ALL_GAME_CONFIG.upgrades.length).fill(0),
+          luckUpgrades: Array(GG_ALL_GAME_CONFIG.luckUpgrades.length).fill(0)
+        };
+        saveGame();
+        updateScore();
+        if (gameState.rebirths === 4) {
+          AskUpvote();
+        }
+        // Refresh the page after rebirth
+        window.location.reload();
+      }
+
+      function initializeSettings() {
+        // Set initial state of switches
+        document.getElementById('darkmode-switch').checked = gameState.settingDarkMode;
+        document.getElementById('alerts-switch').checked = gameState.settingAlerts;
+      }
+
+      function toggleDarkMode() {
+        gameState.settingDarkMode = !gameState.settingDarkMode;
+        if (gameState.settingDarkMode) {
+          document.body.classList.add('dark-mode');
+        } else {
+          document.body.classList.remove('dark-mode');
+        }
+        saveGame();
+      }
+
+      function toggleAlerts() {
+        gameState.settingAlerts = !gameState.settingAlerts;
+        saveGame();
+      }
+
+      function showAlert(arg) {
+        if (gameState.settingAlerts) {
+          alert(arg);
+        }
+      }
+
+      function synchronizeUpgrades() {
+        let coinsPerReload = 1;
+        GG_ALL_GAME_CONFIG.upgrades.forEach((upgrade, index) => {
+          coinsPerReload += (upgrade.increment * gameState.upgrades[index]);
+        });
+        gameState.coinsPerReload = coinsPerReload;
+      }
+
+      function openSection(elementId) {
+        gameState.sectionOpened = elementId;
+        const topMenuButtons = document.querySelectorAll('.top-menu-button');
+        topMenuButtons.forEach(topMenuButton => {
+          const sectionId = topMenuButton.dataset.sectionId;
+          const section = document.getElementById(sectionId);
+          if (sectionId === elementId) {
+            section.classList.remove('hidden');
+            if (section.classList.contains('hidden')) {
+              topMenuButton.classList.toggle('open');
+            } else {
+              topMenuButton.classList.add('open');
+            }
+          } else {
+            section.classList.add('hidden');
+            topMenuButton.classList.remove('open');
+          }
+        });
+        saveGame();
+      }
+
+      function confirmResetGame() {
+        const choice = confirm("Do you want to reset the game?\nThis cannot be undone!\nEverything will be reset!");
+        if (!choice) return;
+        const confirmation = prompt('Enter solution to 13*19 to reset the game!\n\nThis cannot be undone!');
+        if (confirmation !== '247') return;
+        resetGame();
+      }
+
+      function resetGame() {
+        gameState = {
+          ...getNewGameState(),
+          settingDarkMode: gameState.settingDarkMode,
+          settingAlerts: gameState.settingAlerts
+        };
+        saveGame();
+        updateScore();
+        // Clear localStorage settings
+        localStorage.removeItem('the-reload-game-data');
+        // Refresh the page
+        window.location.reload();
+      }
+
+      function loadGame() {
+        const loadGameEvent = {
+          type: 'REQUEST_LOAD_GAME_EVENT'
+        };
+        window.parent.postMessage(loadGameEvent, '*');
+        // Load settings and current section from localStorage
+        const savedData = localStorage.getItem('the-reload-game-data');
+        if (savedData) {
+          const parsedData = JSON.parse(savedData);
+          gameState.settingDarkMode = parsedData.settingDarkMode;
+          gameState.settingAlerts = parsedData.settingAlerts;
+          gameState.sectionOpened = parsedData.sectionOpened || 'home'; // Default to 'home' if not set
+        }
+        if (gameState.settingDarkMode) {
+          document.body.classList.add('dark-mode');
+        }
+      }
+
+      function saveGame() {
+        const saveGameEvent = {
+          type: 'REQUEST_SAVE_GAME_EVENT',
+          save_data: gameState
+        };
+        window.parent.postMessage(saveGameEvent, '*');
+        // Save settings and current section to localStorage
+        const dataToSave = {
+          settingDarkMode: gameState.settingDarkMode,
+          settingAlerts: gameState.settingAlerts,
+          sectionOpened: gameState.sectionOpened
+        };
+        localStorage.setItem('the-reload-game-data', JSON.stringify(dataToSave));
+      }
+
+      function saveScore(score, scoreText) {
+        const submitScoreEvent = {
+          type: 'REQUEST_SAVE_SCORE_EVENT',
+          score_numeric: score,
+          score_text: scoreText,
+        };
+        window.parent.postMessage(submitScoreEvent, '*');
+      }
+
+      function requestLeaderboard() {
+        window.parent.postMessage({
+          type: 'REQUEST_LOAD_SCORES_EVENT'
+        }, '*');
+      }
+
+      function updateLeaderboard(scores) {
+        const leaderboardTableBody = document.getElementById('leaderboard-table-body');
+        leaderboardTableBody.innerHTML = '';
+        scores.forEach((score, index) => {
+          const row = leaderboardTableBody.insertRow();
+          row.insertCell(0).textContent = index + 1;
+          row.insertCell(1).textContent = score.handle;
+          row.insertCell(2).textContent = formatScore(score.score_numeric);
+        });
+      }
+
+      function formatScore(score) {
+        if (score >= 1e18) {
+          return score.toExponential(3);
+        } else if (score >= 1e15) {
+          return (score / 1e15).toFixed(2) + 'q';
+        } else if (score >= 1e12) {
+          return (score / 1e12).toFixed(2) + 't';
+        } else if (score >= 1e9) {
+          return (score / 1e9).toFixed(2) + 'b';
+        } else if (score >= 1e6) {
+          return (score / 1e6).toFixed(2) + 'm';
+        } else if (score >= 1e3) {
+          return (score / 1e3).toFixed(2) + 'k';
+        } else {
+          return score.toLocaleString("en-US");
+        }
+      }
+      // Responses
+      window.addEventListener('message', (event) => {
+        const {
+          type,
+          save_data,
+          scores
+        } = event.data;
+        if (type === 'RESPONSE_LOAD_GAME_EVENT') {
+          if (save_data) {
+            gameState = {
+              ...gameState,
+              ...Object.keys(save_data).reduce((acc, key) => {
+                if (key in gameState) {
+                  acc[key] = save_data[key];
+                }
+                return acc;
+              }, {}),
+            };
+            updateAchievements();
+          }
+          // gameState.upgrades
+          gameState.upgrades.length = GG_ALL_GAME_CONFIG.upgrades.length;
+          gameState.upgrades = [...gameState.upgrades].map(value => value ?? 0);
+          // gameState.luckUpgrades
+          gameState.luckUpgrades.length = GG_ALL_GAME_CONFIG.luckUpgrades.length;
+          gameState.luckUpgrades = [...gameState.luckUpgrades].map(value => value ?? 0);
+          // gameState.rebirthUpgrades
+          gameState.rebirthUpgrades.length = GG_ALL_GAME_CONFIG.rebirthUpgrades.length;
+          gameState.rebirthUpgrades = [...gameState.rebirthUpgrades].map(value => value ?? 0);
+          gameState.totalReloads += 1;
+          synchronizeUpgrades();
+          const randomForCriticalReload = Math.random();
+          const isCriticalReload = (randomForCriticalReload < gameState.criticalReloadChance);
+          const baseIncrement = gameState.coinsPerReload * gameState.coinsPerReloadMultiplier;
+          if (isCriticalReload) {
+            showAlert(`Critical Reload (x${gameState.criticalReloadMultiplier} coins)`);
+            console.log('Critical Reload');
+            gameState.totalScore += baseIncrement * gameState.criticalReloadMultiplier;
+            gameState.coins += baseIncrement * gameState.criticalReloadMultiplier;
+          } else {
+            gameState.totalScore += baseIncrement;
+            gameState.coins += baseIncrement;
+          }
+          console.log('gameState', gameState); // Do not remove this line
+          saveGame();
+          initializeShop();
+          initializeLuckUpgrades();
+          initializeRebirthUpgrades();
+          initializeAchievements();
+          initializeSettings();
+          initializeTopMenu();
+          updateScore();
+          openSection(gameState.sectionOpened || 'home'); // Use 'home' as default if sectionOpened is not set
+        } else if (type === 'RESPONSE_LOAD_SCORES_EVENT') {
+          updateLeaderboard(scores);
+        }
+      });
+      // Make it visible
+      window.buyRebirthUpgrade = buyRebirthUpgrade;
+      window.openSection = openSection;
+      window.confirmResetGame = confirmResetGame;
+      window.resetGame = resetGame;
+      window.toggleDarkMode = toggleDarkMode;
+      window.toggleAlerts = toggleAlerts;
+      let gameState = getNewGameState();
+      // Load the game
+      loadGame();
+      requestLeaderboard();
+      setInterval(requestLeaderboard, 60_000); // Update leaderboard every 10 seconds
+    })();
+  </script>
+
+</body>
+
+</html>
