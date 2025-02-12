@@ -703,7 +703,7 @@
           // Create the text container
           const textDiv = document.createElement('div');
           const tierText = document.createElement('div');
-          tierText.textContent = `Tier ${index + 1} Upgrade`;
+          tierText.textContent = `Tier ${formatScore(index + 1)} Upgrade`;
           const incrementText = document.createElement('div');
           incrementText.textContent = `+${baseIncrement}$ per reload`;
           // Create the button
