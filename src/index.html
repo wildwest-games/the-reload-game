@@ -1140,8 +1140,20 @@
       }
 
       function formatNumber(number) {
-        if (number >= 1e18) {
-          return number.toExponential(3); // Anything greater than or equal to a Quintillion
+        if (number >= 1e36) {
+          return number.toExponential(3); // Anything greater than or equal to a Undecillion
+        } else if (number >= 1e33) {
+          return (number / 1e33).toFixed(2) + 'Dc'; // Decillion
+        } else if (number >= 1e30) {
+          return (number / 1e30).toFixed(2) + 'No'; // Nonillion
+        } else if (number >= 1e27) {
+          return (number / 1e27).toFixed(2) + 'Oc'; // Octillion
+        } else if (number >= 1e24) {
+          return (number / 1e24).toFixed(2) + 'Sp'; // Septillion
+        } else if (number >= 1e21) {
+          return (number / 1e21).toFixed(2) + 'Sx'; // Sextillion
+        } else if (number >= 1e18) {
+          return (number / 1e18).toFixed(2) + 'Qi'; // Quintillion
         } else if (number >= 1e15) {
           return (number / 1e15).toFixed(2) + 'Qa'; // Quadrillion
         } else if (number >= 1e12) {
