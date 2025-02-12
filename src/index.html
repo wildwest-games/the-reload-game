@@ -509,7 +509,7 @@
             };
           };
           // Create and merge the upgrades
-          const upgrades = [];
+          let upgrades = [];
           for (let i = 0; i < 35; i++) {
             const defaultConfig = defaultUpgradeGenerator(i);
             const customConfig = customUpgrades[i] || {};
@@ -517,6 +517,18 @@
               ...defaultConfig,
               ...customConfig
             });
+          }
+          // Create (almost) endless upgrades.
+          const endlessUpgradesLimit = 1e3
+          for (let i = upgrades.length - 1; i < endlessUpgradesLimit; i++) {
+            let upgrade = {
+              baseCost: (i % 10) * (10 ** i),
+              costIncrease: 1.05 + i * 0.05,
+              increment: (10 ** (i + 1)) - 1,
+              max_level: 99999,
+              rebirthsToUnlock: (2 * i) - 1,
+            };
+            upgrades.push(upgrade)
           }
           return upgrades;
         })(),
