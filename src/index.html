@@ -411,7 +411,6 @@
           const customUpgrades = [{
               baseCost: 7,
               costIncrease: 1.125,
-              max_level: 199,
               rebirthsToUnlock: 0
             },
             {
@@ -504,12 +503,12 @@
               baseCost: Infinity,
               costIncrease: 1.05,
               increment: 10 ** i,
-              max_level: 180,
+              max_level: 99999,
               rebirthsToUnlock: 2 * i - 1,
             };
           };
           // Create and merge the upgrades
-          const upgrades = [];
+          let upgrades = [];
           for (let i = 0; i < 35; i++) {
             const defaultConfig = defaultUpgradeGenerator(i);
             const customConfig = customUpgrades[i] || {};
@@ -517,6 +516,18 @@
               ...defaultConfig,
               ...customConfig
             });
+          }
+          // Create (almost) endless upgrades.
+          const endlessUpgradesLimit = 1e3
+          for (let i = upgrades.length - 1; i < endlessUpgradesLimit; i++) {
+            let upgrade = {
+              baseCost: (i % 10) * (10 ** i),
+              costIncrease: 1.05 + ((i - (upgrades.length - 1)) * 0.05),
+              increment: (10 ** (i + 1)) - 1,
+              max_level: 99999,
+              rebirthsToUnlock: (2 * i) - 1,
+            };
+            upgrades.push(upgrade)
           }
           return upgrades;
         })(),
@@ -691,7 +702,7 @@
           // Create the text container
           const textDiv = document.createElement('div');
           const tierText = document.createElement('div');
-          tierText.textContent = `Tier ${index + 1} Upgrade`;
+          tierText.textContent = `Tier ${formatNumber(index + 1)} Upgrade`;
           const incrementText = document.createElement('div');
           incrementText.textContent = `+${baseIncrement}$ per reload`;
           // Create the button
@@ -1123,25 +1134,37 @@
           const row = leaderboardTableBody.insertRow();
           row.insertCell(0).textContent = index + 1;
           row.insertCell(1).textContent = score.handle;
-          row.insertCell(2).textContent = formatScore(score.score_numeric);
+          row.insertCell(2).textContent = formatNumber(score.score_numeric);
         });
       }
 
-      function formatScore(score) {
-        if (score >= 1e18) {
-          return score.toExponential(3);
-        } else if (score >= 1e15) {
-          return (score / 1e15).toFixed(2) + 'q';
-        } else if (score >= 1e12) {
-          return (score / 1e12).toFixed(2) + 't';
-        } else if (score >= 1e9) {
-          return (score / 1e9).toFixed(2) + 'b';
-        } else if (score >= 1e6) {
-          return (score / 1e6).toFixed(2) + 'm';
-        } else if (score >= 1e3) {
-          return (score / 1e3).toFixed(2) + 'k';
+      function formatNumber(number) {
+        if (number >= 1e36) {
+          return number.toExponential(3); // Anything greater than or equal to a Undecillion
+        } else if (number >= 1e33) {
+          return (number / 1e33).toFixed(2) + 'Dc'; // Decillion
+        } else if (number >= 1e30) {
+          return (number / 1e30).toFixed(2) + 'No'; // Nonillion
+        } else if (number >= 1e27) {
+          return (number / 1e27).toFixed(2) + 'Oc'; // Octillion
+        } else if (number >= 1e24) {
+          return (number / 1e24).toFixed(2) + 'Sp'; // Septillion
+        } else if (number >= 1e21) {
+          return (number / 1e21).toFixed(2) + 'Sx'; // Sextillion
+        } else if (number >= 1e18) {
+          return (number / 1e18).toFixed(2) + 'Qi'; // Quintillion
+        } else if (number >= 1e15) {
+          return (number / 1e15).toFixed(2) + 'Qa'; // Quadrillion
+        } else if (number >= 1e12) {
+          return (number / 1e12).toFixed(2) + 'T'; // Trillion
+        } else if (number >= 1e9) {
+          return (number / 1e9).toFixed(2) + 'B'; // Billion
+        } else if (number >= 1e6) {
+          return (number / 1e6).toFixed(2) + 'M'; // Million
+        } else if (number >= 1e3) {
+          return (number / 1e3).toFixed(2) + 'K'; // Thousand
         } else {
-          return score.toLocaleString("en-US");
+          return number.toLocaleString("en-US");
         }
       }
       // Responses
