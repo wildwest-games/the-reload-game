@@ -411,7 +411,6 @@
           const customUpgrades = [{
               baseCost: 7,
               costIncrease: 1.125,
-              max_level: 199,
               rebirthsToUnlock: 0
             },
             {
@@ -504,7 +503,7 @@
               baseCost: Infinity,
               costIncrease: 1.05,
               increment: 10 ** i,
-              max_level: 180,
+              max_level: 99999,
               rebirthsToUnlock: 2 * i - 1,
             };
           };
@@ -523,7 +522,7 @@
           for (let i = upgrades.length - 1; i < endlessUpgradesLimit; i++) {
             let upgrade = {
               baseCost: (i % 10) * (10 ** i),
-              costIncrease: 1.05 + i * 0.05,
+              costIncrease: 1.05 + ((i - (upgrades.length - 1)) * 0.05),
               increment: (10 ** (i + 1)) - 1,
               max_level: 99999,
               rebirthsToUnlock: (2 * i) - 1,
